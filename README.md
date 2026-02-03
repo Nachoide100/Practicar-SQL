@@ -179,7 +179,62 @@ purchase_no = 2
 </details>
 
 ## 🟡 Nivel: Intermedio
+*Foco en: Funciones ventana, CTEs, JOINS complejos y consultas temporales*
 
+### 📝 Reto 01
+**Problema:** Construye una consulta para obtener el número total de compañías que han publicado listas de trabajo duplicadas (dos trabajos en la misma compañía con el mismo titulo y descripción).
+
+**Estructura de las tablas:**
+
+![Tabla job_listings](https://github.com/Nachoide100/Practicar-SQL/blob/7986e6bc1dc8065e2f616dd0899c10bce0e2ba86/tablas/RetoI1.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH job_listings_ranks as (
+	SELECT company_id, 
+					title, 
+					description, 
+					ROW_NUMBER () OVER (
+						PARTITION BY company_id, 
+						title, 
+						description, 
+						ORDER BY post_date
+						) as rank
+					FROM job_listings
+)
+
+SELECT COUNT(DISTINCT company_id)
+FROM
+	(
+		SELECT company_id
+		FROM job_listings_ranks
+		WHERE MAX(rank) > 1
+	)
+```
+</details>
+
+### 📝 Reto 02
+**Problema:** Realiza una consulta para obtener la lista de clientes cuya primera transaccion valía 50$ o más. 
+
+**Estructura de las tablas:**
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/7986e6bc1dc8065e2f616dd0899c10bce0e2ba86/tablas/RetoI2.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT user_id
+FROM (
+			SELECT user_id, MIN(transaction_date) as first_date
+			FROM user_transactions
+			WHERE transaction_date = first_date
+			)
+WHERE spend >= 50
+```
+</details>
 
 ## 🔴 Nivel: Difícil 
 
