@@ -71,3 +71,48 @@ FROM viewership
 ```
 </details>
 
+### 📝 Reto 04
+**Problema:** Calcula el gasto acumulativo por fecha para cada producto en orden cronológico.
+
+**Estructura de las tablas:**
+
+![Tabla total_trans](https://github.com/Nachoide100/Practicar-SQL/blob/f7945c13060d854d38f12626e36e1193d72f3767/tablas/Reto4.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT trans_date,
+			 product_id, 
+			 SUM(spend) OVER (
+				 PARTITION BY producto_id
+				 ORDER BY 
+					 trans_date
+					) as cum_spend
+FROM total_trans 
+ORDER BY product_id, 
+					trans_date ASC 
+```
+</details>
+
+### 📝 Reto 05
+**Problema:** Realiza una consulta para conocer los 10 clientes con un mayor número de productos ordenados dentro de los clientes que hayan gastado al menos 1000$. 
+
+**Estructura de las tablas:**
+
+![Tabla use_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/f7945c13060d854d38f12626e36e1193d72f3767/tablas/Reto5.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT user_id, 
+			COUNT(product_id) as num_products
+FROM user_transactions
+GROUP BY user_id
+HAVING SUM(spend) >= 1000
+ORDER BY num_products DESC
+LIMIT 10
+```
+</details>
+
