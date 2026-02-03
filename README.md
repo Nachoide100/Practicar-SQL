@@ -226,13 +226,19 @@ FROM
   <summary><b>Ver Solución SQL 🔑</b></summary>
   
   ```sql
+WITH purchase_num as (
+	SELECT user_id
+					spend, 
+					ROW_NUMBER () OVER (
+						PARTITION BY user_id
+						ORDER BY transaction_date ASC
+					) as rownum
+				FROM user_transactions
+)
 SELECT user_id
-FROM (
-			SELECT user_id, MIN(transaction_date) as first_date
-			FROM user_transactions
-			WHERE transaction_date = first_date
-			)
-WHERE spend >= 50
+FROM purchase_num
+WHERE rownum = 1 AND spend >= 50.00
+					
 ```
 </details>
 
