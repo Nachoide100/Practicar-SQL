@@ -4,6 +4,13 @@ Bienvenido a mi laboratorio de práctica de SQL. En este repositorio documento l
 
 **Objetivo:** Practicar mucho todo tipo de consultas. 
 
+### 🗺️ Navegación Rápida
+
+[![](https://img.shields.io/badge/Nivel-Fácil-brightgreen?style=for-the-badge)](#-nivel-fácil)
+[![](https://img.shields.io/badge/Nivel-Intermedio-yellow?style=for-the-badge)](#-nivel-intermedio)
+[![](https://img.shields.io/badge/Nivel-Difícil-red?style=for-the-badge)](#-nivel-difícil)
+
+
 ---
 
 ## 🟢 Nivel: Fácil 
@@ -170,4 +177,9 @@ WHERE
 purchase_no = 2
 ```
 </details>
+
+## 🟡 Nivel: Intermedio
+
+
+## 🔴 Nivel: Difícil 
 
