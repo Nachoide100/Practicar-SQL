@@ -30,6 +30,8 @@ GROUP BY app_id
 ```
 </details>
 
+---
+
 ### 📝 Reto 02
 **Problema:** Obtener la lista de las tres ciudades con mayor número de pedidos completados.
 
@@ -49,3 +51,23 @@ WHERE t.status = 'complete'
 GROUP BY city
 ORDER BY num_orders DESC
 LIMIT 3
+```
+</details>
+
+### 📝 Reto 03
+**Problema:** Suponiendo que existen tres tipos de dispositivos (laptop, tablet y phone), agrupa los dos últimos en un grupo llamado "mobile" y el número audienca que usan laptop frente dispositivos móbiles.
+
+**Estructura de las tablas:**
+
+![Tabla viewership](https://github.com/Nachoide100/Practicar-SQL/blob/2d9ad7e03adf60436b2a58b06777a7d3034e6e56/tablas/Reto3.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT SUM(IF(device_type = 'laptop', 1, 0) AS laptop_views, 
+		SUM(IF(device_type IN ('phone', 'tablet'), 1, 0) as mobile_views
+FROM viewership 
+```
+</details>
+
