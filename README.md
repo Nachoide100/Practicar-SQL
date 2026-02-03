@@ -116,3 +116,58 @@ LIMIT 10
 ```
 </details>
 
+### 📝 Reto 06
+**Problema:** Realiza una consulta para obtener un histograma de los tweets publicados por usuario en 2020. 
+
+**Estructura de las tablas:**
+
+![Tabla tweets](https://github.com/Nachoide100/Practicar-SQL/blob/9481a488d3ae6b836b134a816f9efb8138528ff9/tablas/Reto6.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT num_tweets, 
+		COUNT(*) as num_users
+FROM 
+	(
+		SELECT user_id, 
+			COUNT(*) as num_tweets
+		FROM tweets
+		WHERE tweet_date BETWEEN '2020-01-01' AND '2020-12-31'
+		GROUP BY user_id
+	) total_tweets
+GROUP BY num_tweets
+ORDER BY num_tweets ASC
+```
+</details>
+
+### 📝 Reto 07
+**Problema:** Realiza una consulta para obtener el número de personas que han comprado una o más unidades del mismo producto en múltiples días.  
+
+**Estructura de las tablas:**
+
+![Tabla purchases](https://github.com/Nachoide100/Practicar-SQL/blob/9481a488d3ae6b836b134a816f9efb8138528ff9/tablas/Reto7.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT COUNT(DISTINCT user_id) 
+FROM 
+	(
+		SELECT 
+			user_id, 
+			RANK () OVER (
+				PARTITION BY user_id, 
+				product_id 
+				ORDER BY 
+					CAST(purchase_time as date)
+			) as purchase_no
+		FROM purchases
+	)
+WHERE 
+purchase_no = 2
+```
+</details>
+
