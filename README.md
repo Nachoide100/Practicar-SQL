@@ -1,6 +1,6 @@
 # 🛠️ SQL: Resolución de Problemas
 
-Bienvenido a mi laboratorio de práctica de SQL. En este repositorio documento la resolución de diversos retos técnicos, desde consultas básicas de filtrado hasta operaciones complejas con funciones de ventana y optimización. Estan divididos en tres grupos según lo difíciles que me han resultado (totalmente subjetivo) y no estoy al 100% seguro de que el 100% de los ejercicios estén al 100% correcto asi que si alguien ve algún fallo, no dude en comunicarmelo. 
+Bienvenido a mi laboratorio de práctica de SQL. En este repositorio documento la resolución de diversos retos técnicos, desde consultas básicas de filtrado hasta operaciones complejas con funciones de ventana y optimización. Estan divididos en tres grupos según lo difíciles que me han resultado (totalmente subjetivo) y no estoy al 100% seguro de que el 100% de los ejercicios estén al 100% correcto asi que si alguien ve algún fallo, no dude en comunicarmelo!! Un saludo!
 
 **Objetivo:** Practicar mucho todo tipo de consultas. 
 
@@ -205,8 +205,11 @@ HAVING COUNT(skill) = 3
 **Estructura de las tablas:**
 
 pages
+
 ![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/83007012fbbe5fda1754cfce3d457530c54e8628/tablas/Reto9.png)
+
 page_likes
+
 ![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/83007012fbbe5fda1754cfce3d457530c54e8628/tablas/Reto9_1.png)
 
 <details>
@@ -266,6 +269,56 @@ WHERE EXTRACT(MONTH FROM sent_date) = '8'
 GROUP BY sender_id
 ORDER BY count_messages DESC
 LIMIT 2;
+```
+</details>
+
+### 📝 Reto 12
+**Problema:**  Imagina que tiene la siguiente tabla con la suscripción de usuarios a Tik Tok y su confirmación a través de email. Escribe una consulta para saber los IDs de los usuarios que no confirmaron sus suscripción al primer día, pero si al segundo.
+**Estructura de las tablas:**
+
+emails
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/2e23f5ae754ccb80d185753c43e1f9041ec93488/tablas/Reto12.png)
+
+texts
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/2e23f5ae754ccb80d185753c43e1f9041ec93488/tablas/Reto12_1.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT user_id
+FROM texts t
+INNER JOIN emails e
+ON t.email_id = e.email_id
+WHERE action_date = signup_date + INTERVAL '1 day'
+```
+</details>
+
+### 📝 Reto 13
+**Problema:** Identifica cuantos UHG Policy Holders hicieron 3 o más llamadas, asumiendo que cada llama está identificada por la columna case_id.
+
+**Estructura de las tablas:**
+
+callers
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/2e23f5ae754ccb80d185753c43e1f9041ec93488/tablas/Reto13.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT COUNT(policy_holder_id) as policy_holder_count
+FROM (
+      SELECT policy_holder_id
+      FROM callers
+      GROUP BY policy_holder_id
+      HAVING COUNT(case_id) >= 3
+      ) as holders
 ```
 </details>
 
