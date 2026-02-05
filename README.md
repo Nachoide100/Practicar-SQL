@@ -322,6 +322,28 @@ FROM (
 ```
 </details>
 
+### 📝 Reto 14
+**Problema:** Determina el segundo salario más alto de entre todos los empleados.
+
+**Estructura de las tablas:**
+
+employee
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/cb89b1292d3dc0fd8636ca5b62a6ac5024a62954/tablas/Reto14.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT MAX(salary) as second_highest_salary
+FROM employee
+WHERE salary < 
+      (SELECT MAX(salary)
+      FROM employee)
+```
+</details>
+
 ## 🟡 Nivel: Intermedio
 *Foco en: Funciones ventana, CTEs, JOINS complejos y consultas temporales*
 
@@ -382,6 +404,74 @@ WITH purchase_num as (
 SELECT user_id
 FROM purchase_num
 WHERE rownum = 1 AND spend >= 50.00
+					
+```
+</details>
+
+### 📝 Reto 03
+**Problema:** Obtén la tercera transacción de cada usuario. Muestra el user_id, spend y transaction_date. 
+
+**Estructura de las tablas:**
+
+transactions
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/edefc9c345a9b08db09c7f3f9ea3fa59da2a426e/tablas/Reto3I.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH date_listing as(
+      SELECT user_id, spend, transaction_date,
+        ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY transaction_date) as date_ranking
+        FROM transactions)
+        
+SELECT user_id, spend, transaction_date
+FROM date_listing
+WHERE date_ranking = 3
+					
+```
+</details>
+
+### 📝 Reto 04
+**Problema:** Desarrolla una consulta para obtener una visión del tiempo gastado en enviar (activity_type = ‘send’) respecto al tiempo gastado en abrir (activity_type = ‘open’) en formato de porcentaje respecto al total, agrupado según el grupo de edad.
+
+**Estructura de las tablas:**
+
+activities
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/cb89b1292d3dc0fd8636ca5b62a6ac5024a62954/tablas/Reto4I.png)
+
+age
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/edefc9c345a9b08db09c7f3f9ea3fa59da2a426e/tablas/Reto4I_2.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH snaps_statistics AS (
+  SELECT 
+    age.age_bucket, 
+    SUM(CASE WHEN activities.activity_type = 'send' 
+      THEN activities.time_spent ELSE 0 END) AS send_timespent, 
+    SUM(CASE WHEN activities.activity_type = 'open' 
+      THEN activities.time_spent ELSE 0 END) AS open_timespent, 
+    SUM(activities.time_spent) AS total_timespent 
+  FROM activities
+  INNER JOIN age_breakdown AS age 
+    ON activities.user_id = age.user_id 
+  WHERE activities.activity_type IN ('send', 'open') 
+  GROUP BY age.age_bucket
+) 
+
+SELECT 
+  age_bucket, 
+  ROUND(100.0 * send_timespent / total_timespent, 2) AS send_perc, 
+  ROUND(100.0 * open_timespent / total_timespent, 2) AS open_perc 
+FROM snaps_statistics;
 					
 ```
 </details>
