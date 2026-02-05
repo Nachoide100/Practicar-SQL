@@ -221,6 +221,54 @@ ORDER BY p.page_id
 ```
 </details>
 
+### 📝 Reto 10
+**Problema:** Viendo la tabla de posts, ejecuta una consulta que devuelva, para los usuarios que han hecho al menos dos posts en 2021, la cantidad de días que han pasado entre los posts.
+
+**Estructura de las tablas:**
+
+posts
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/9920f884dd366522bf899bece5e012a7f465e324/tablas/Reto10.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT user_id, MAX(post_date::DATE) - MIN(post_date::DATE) AS days_between
+FROM posts
+WHERE DATE_PART('year', post_date::DATE) = 2021 
+GROUP BY user_id
+HAVING COUNT(post_id) > 1
+```
+</details>
+
+### 📝 Reto 11
+**Problema:** Escribe una consulta para identificar a los dos usuarios que más mensajes hayan enviado en Agosto de 2022. Muestra el su ID ordenados según la cantidad de mensajes que enviaron. 
+
+**Estructura de las tablas:**
+
+messages
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/9920f884dd366522bf899bece5e012a7f465e324/tablas/Reto11.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT 
+  sender_id,
+  COUNT(message_id) AS count_messages
+FROM messages
+WHERE EXTRACT(MONTH FROM sent_date) = '8'
+  AND EXTRACT(YEAR FROM sent_date) = '2022'
+GROUP BY sender_id
+ORDER BY count_messages DESC
+LIMIT 2;
+```
+</details>
+
 ## 🟡 Nivel: Intermedio
 *Foco en: Funciones ventana, CTEs, JOINS complejos y consultas temporales*
 
