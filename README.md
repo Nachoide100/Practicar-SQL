@@ -178,6 +178,49 @@ purchase_no = 2
 ```
 </details>
 
+### 📝 Reto 08
+**Problema:** Para ser un Data Scientist se precisa de Python, Tableau y PostgreSQL. Haz una consulta que devuelva qué candidatos tienen las skills necesarias para ser un Data Scientist.  
+
+**Estructura de las tablas:**
+
+candidates
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/83007012fbbe5fda1754cfce3d457530c54e8628/tablas/Reto8.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT candidate_id
+FROM candidates
+WHERE skill IN ('Python', 'Tableau', 'PostgreSQL')
+GROUP BY candidate_id
+HAVING COUNT(skill) = 3
+```
+</details>
+
+### 📝 Reto 09
+**Problema:** Realiza una consulta para saber el ID de las páginas que no tienen ningún like. Muestra el resultado en orden ascendente según el page_id. 
+
+**Estructura de las tablas:**
+
+pages
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/83007012fbbe5fda1754cfce3d457530c54e8628/tablas/Reto9.png)
+page_likes
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/83007012fbbe5fda1754cfce3d457530c54e8628/tablas/Reto9_1.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT p.page_id
+FROM pages p
+LEFT JOIN page_likes l ON p.page_id = l.page_id
+WHERE liked_date IS NULL
+ORDER BY p.page_id
+```
+</details>
+
 ## 🟡 Nivel: Intermedio
 *Foco en: Funciones ventana, CTEs, JOINS complejos y consultas temporales*
 
