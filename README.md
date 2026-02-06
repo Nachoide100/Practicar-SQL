@@ -685,10 +685,11 @@ ORDER BY d.department_name ASC, s.salary DESC, s.name ASC
 
 **Estructura de las tablas:**
 
-product_spend
+emails
 
 ![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/a4f27c4aca7dc7a043db53aed39c32439bad9765/tablas/Reto9I.png)
 
+texts
 
 ![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/a4f27c4aca7dc7a043db53aed39c32439bad9765/tablas/Reto9I_1.png)
 
@@ -710,4 +711,84 @@ LEFT JOIN texts
 </details>
 
 ## 🔴 Nivel: Difícil 
+*Foco en: Funciones ventana, CTEs y JOINS complejos, UNIONS*
 
+### 📝 Reto 01
+**Problema:**  Observando las siguientes tablas y asumiendo que:
+
+* songs_history recoge datos hasta el 31-07-2022
+* songs_weekly recoge datos de la semana actual (semana del 1 de agosto).
+
+Desarrolla una consulta que muestre el user_id, song_id y la cantidad de song_plays hasta el 04-08-2022. Debemos asumir que hay usuarios y canciones presentes en songs_weekly que no están en songs_history.
+
+**Estructura de las tablas:**
+
+songs_history
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/9ecd33eb7a4037f2475ad2a77c344c2093243aa8/tablas/Reto1D.png)
+
+songs_weekly
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/9ecd33eb7a4037f2475ad2a77c344c2093243aa8/tablas/Reto1D_1.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH history AS 
+( 
+  SELECT user_id, song_id, song_plays
+  FROM songs_history
+
+UNION ALL
+
+  SELECT user_id, song_id, COUNT(song_id) AS song_plays
+  FROM songs_weekly
+  WHERE listen_time <= '2022-08-05'
+  GROUP BY user_id, song_id
+)
+
+SELECT user_id, song_id, SUM(song_plays) AS song_count
+FROM history
+GROUP BY user_id, song_id
+ORDER BY song_count DESC
+```
+</details>
+
+### 📝 Reto 02
+**Problema:**  Suponiendo que un super cliente se define como aquel que ha comprado al menos un producto de cada categoría de la tabla productos, escribe una consulta para identificar los IDs de esos superclientes. 
+
+**Estructura de las tablas:**
+
+songs_history
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/9ecd33eb7a4037f2475ad2a77c344c2093243aa8/tablas/Reto2D.png)
+
+songs_weekly
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/9ecd33eb7a4037f2475ad2a77c344c2093243aa8/tablas/Reto2D_1.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH super_customer AS
+( 
+  SELECT c.customer_id, 
+        COUNT(DISTINCT p.product_category) as product_count
+  FROM customer_contracts c
+  INNER JOIN products p ON c.product_id = p.product_id
+  GROUP BY c.customer_id
+  )
+  
+SELECT customer_id
+FROM super_customer
+WHERE product_count = (
+          SELECT COUNT(DISTINCT product_category) FROM products
+          )
+```
+</details>
