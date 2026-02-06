@@ -366,6 +366,53 @@ ORDER BY SUM(total_sales) DESC
 ```
 </details>
 
+
+### 📝 Reto 16
+**Problema:** Escribe una consulta que muestre el nombre de cada tarjeta de crédito y la diferencia en el número de tarjetas dañadas entre el mes con mayor número y el que menos. Muestra los resultados en orden de mayor diferencia a menor. 
+
+**Estructura de las tablas:**
+
+monthly_cards_issued
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/e219608c5bae30223ad77f325c357adb07d72496/tablas/Reto16.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT card_name, 
+       MAX(issued_amount) - MIN(issued_amount) as difference
+FROM monthly_cards_issued
+GROUP BY card_name
+ORDER BY difference DESC
+```
+</details>
+
+
+### 📝 Reto 17
+**Problema:** Calcula la media de items_per_oder redondeando a un decimal. 
+
+**Estructura de las tablas:**
+
+items_per_order
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/e219608c5bae30223ad77f325c357adb07d72496/tablas/Reto17.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT 
+  ROUND(
+    SUM(CAST(item_count as DECIMAL) *order_occurrences)
+    /SUM(order_occurrences)
+  ,1) AS mean
+FROM items_per_order;
+```
+</details>
+
 ## 🟡 Nivel: Intermedio
 *Foco en: Funciones ventana, CTEs, JOINS complejos y consultas temporales*
 
