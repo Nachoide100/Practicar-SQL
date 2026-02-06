@@ -586,5 +586,57 @@ ORDER BY unique_queries;
 ```
 </details>
 
+### 📝 Reto 06
+**Problema:** Calcula la media móvil de 3 días para los tweets de cada usuario. Muestra el user_id, tweet_date y la media móvil redondeada a dos decimales.  
+
+**Estructura de las tablas:**
+
+tweets
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/a8a09324f88d50258a688a1af54ec91f047ce395/tablas/Reto6I.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT user_id, tweet_date,
+        ROUND(AVG(tweet_count) OVER (PARTITION BY user_id ORDER BY tweet_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 2) as rolling_avg_3
+FROM tweets
+					
+```
+</details>
+
+### 📝 Reto 07
+**Problema:** Desarrolla una consulta para identificar los dos productos con más ventas dentro de cada categoría en el año 2022. El resultado debe incluir categoría, producto y total de ventas.  
+
+**Estructura de las tablas:**
+
+product_spend
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/a8a09324f88d50258a688a1af54ec91f047ce395/tablas/Reto7I.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH ranking_spends as
+( 
+  SELECT category, product, SUM(spend) as total_spend, 
+          RANK() OVER (PARTITION BY category ORDER BY SUM(spend) DESC) as ranking
+  FROM product_spend
+  WHERE EXTRACT(YEAR FROM transaction_date) = 2022
+  GROUP BY category, product)
+  
+SELECT category, product, total_spend
+FROM ranking_spends
+WHERE ranking <= 2
+ORDER BY category, ranking
+					
+```
+</details>
+
 ## 🔴 Nivel: Difícil 
 
