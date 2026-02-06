@@ -344,6 +344,28 @@ WHERE salary <
 ```
 </details>
 
+### 📝 Reto 15
+**Problema:** Desarrolla una consulta para calcular la venta total de drogas por cada manufacter. Redondea la respuesta al millón más cercano y muestra los resultados en orden descendente según el total de ventas. (Para una mayor comprensión formatea el resultado de ventas a: $36 million)
+
+**Estructura de las tablas:**
+
+pharmacy_sales
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/7923c6f317032baa7728f458f3dc8c2e4c985339/tablas/Reto15.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT manufacturer, 
+        CONCAT('$', ROUND(SUM(total_sales) / 1000000), ' million') as sales
+FROM pharmacy_sales
+GROUP BY manufacturer
+ORDER BY SUM(total_sales) DESC
+```
+</details>
+
 ## 🟡 Nivel: Intermedio
 *Foco en: Funciones ventana, CTEs, JOINS complejos y consultas temporales*
 
@@ -472,6 +494,47 @@ SELECT
   ROUND(100.0 * send_timespent / total_timespent, 2) AS send_perc, 
   ROUND(100.0 * open_timespent / total_timespent, 2) AS open_perc 
 FROM snaps_statistics;
+					
+```
+</details>
+
+### 📝 Reto 05
+**Problema:** Crea una consulta para generar un histograma que muestre el número de consultas únicas llevadas a cabo por los empleados durante el tercer trimestre de 2023 (Julio - Septiembre). También tienen que aparcer el número de empleados que no realizaron ninguna consulta durante ese período. 
+
+**Estructura de las tablas:**
+
+employees_queries
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/7923c6f317032baa7728f458f3dc8c2e4c985339/tablas/Reto5I.png)
+
+employees
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/7923c6f317032baa7728f458f3dc8c2e4c985339/tablas/Reto5I_1.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH employee_queries AS (
+  SELECT 
+    e.employee_id,
+    COALESCE(COUNT(DISTINCT q.query_id), 0) AS unique_queries
+  FROM employees AS e
+  LEFT JOIN queries AS q
+    ON e.employee_id = q.employee_id
+      AND q.query_starttime >= '2023-07-01T00:00:00Z'
+      AND q.query_starttime < '2023-10-01T00:00:00Z'
+  GROUP BY e.employee_id
+)
+
+SELECT
+  unique_queries,
+  COUNT(employee_id) AS employee_count
+FROM employee_queries
+GROUP BY unique_queries
+ORDER BY unique_queries;
 					
 ```
 </details>
