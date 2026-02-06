@@ -638,5 +638,76 @@ ORDER BY category, ranking
 ```
 </details>
 
+### 📝 Reto 08
+**Problema:** Identifica los 3 empleados mejor pagados de cada departamento. Muestra nombre de departamento, nombre de empleado y usuario. En caso de duplicados, ordena el nombre del departamento de forma ascendente, el salario de forma descendente y si hay varios empleados con el mismo salarios ordénalos alfabéticamente. 
+
+**Estructura de las tablas:**
+
+employee
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/a4f27c4aca7dc7a043db53aed39c32439bad9765/tablas/Reto8I.png)
+
+department
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/a4f27c4aca7dc7a043db53aed39c32439bad9765/tablas/Reto8I_1.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH ranked_salary AS (
+  SELECT 
+    name,
+    salary,
+    department_id,
+    DENSE_RANK() OVER (
+      PARTITION BY department_id ORDER BY salary DESC) AS ranking
+  FROM employee
+)
+
+SELECT 
+  d.department_name,
+  s.name,
+  s.salary
+FROM ranked_salary AS s
+INNER JOIN department AS d
+  ON s.department_id = d.department_id
+WHERE s.ranking <= 3
+ORDER BY d.department_name ASC, s.salary DESC, s.name ASC
+					
+```
+</details>
+
+### 📝 Reto 09
+**Problema:** Diseña una consulta para obtener el ratio de acitvación (porcentaje de cuentas activadas) de los usuarios de la tabla emails. Redondea el resultado a dos decimales. 
+
+**Estructura de las tablas:**
+
+product_spend
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/a4f27c4aca7dc7a043db53aed39c32439bad9765/tablas/Reto9I.png)
+
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/a4f27c4aca7dc7a043db53aed39c32439bad9765/tablas/Reto9I_1.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT 
+  ROUND(CAST(COUNT(texts.email_id) as DECIMAL)
+    /COUNT(DISTINCT emails.email_id), 2) AS activation_rate
+FROM emails
+LEFT JOIN texts
+  ON emails.email_id = texts.email_id
+  AND texts.signup_action = 'Confirmed';
+					
+```
+</details>
+
 ## 🔴 Nivel: Difícil 
 
