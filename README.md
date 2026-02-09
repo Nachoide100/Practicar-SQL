@@ -62,7 +62,7 @@ LIMIT 3
 </details>
 
 ### 📝 Reto 03
-**Problema:** Suponiendo que existen tres tipos de dispositivos (laptop, tablet y phone), agrupa los dos últimos en un grupo llamado "mobile" y el número audienca que usan laptop frente dispositivos móbiles.
+**Problema:** Suponiendo que existen tres tipos de dispositivos (laptop, tablet y phone), agrupa los dos últimos en un grupo llamado "mobile" y calcula el número de audiencia que usa laptop frente a dispositivos móbiles.
 
 **Estructura de las tablas:**
 
