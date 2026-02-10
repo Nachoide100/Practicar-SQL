@@ -788,6 +788,69 @@ LEFT JOIN texts
 ```
 </details>
 
+### 📝 Reto 10
+**Problema:** Agrupando a los usuarios según su último día de transacción, diseña una consulta para obtener el número de usuarios que hicieron una compra y el número total de productos comprados en cada día de transacción. 
+
+**Estructura de las tablas:**
+
+user_transactions
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/c5396c667ab3e3b6165331cba6fc90cb65d451b6/tablas/Reto10I.png)
+
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH latest_date as
+(
+	SELECT transaction_date, user_id, product_id
+				RANK () OVER (PARTITION BY user_id ORDER BY CAST(transaction_date as DATE) DESC
+	) as days_rank
+	FROM user_transactions
+)
+
+SELECT transaction_date, 
+				COUNT(DISTINCT user_id) as num_users, 
+				SUM(product_id) as total_products
+FROM latest_date
+WHERE days_rank = 1
+GROUP BY transaction_date
+ORDER BY transaction_date DESC
+					
+```
+</details>
+
+### 📝 Reto 11
+**Problema:** Para cada barrio, identifica cual es la mayor diferencia de precio entre dos alojamientos consecutivos (ordenados de menor a mayor precio). Muestra el resultado por barrio y ordenado según esa diferencia. 
+
+**Estructura de las tablas:**
+
+barrios
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/e3d27fdaf6a986e7033a051a59cb4fb4b1d5be98/tablas/Reto11I.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH diferencias as (
+	SELECT neighbourhood_cleansed, price, 
+		price - LAG(price) OVER (PARTITION BY neighbourhood_cleansed ORDER BY price) AS diferencia
+	FROM barrios)
+
+SELECT neighbourhood_cleansed, MAX(diferencia) as diferencia_maxima
+FROM diferencias
+GROUP BY neighbourhood_cleansed
+ORDER BY diferencia_maxima DESC
+					
+```
+</details>
+
 ## 🔴 Nivel: Difícil 
 *Foco en: Funciones ventana, CTEs y JOINS complejos, UNIONS*
 
