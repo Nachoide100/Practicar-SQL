@@ -851,6 +851,82 @@ ORDER BY diferencia_maxima DESC
 ```
 </details>
 
+### 📝 Reto 12
+**Problema:** Identifica las “trampas para turistas”. Haz una consulta para buscar los alojamientos que se encuentra entre el 10 % más caro de su barrio pero tengan una puntuación mediocre (< de 4 estrellas). Muestra el resultado ordenado por precio de mayor a menor. 
+**Estructura de las tablas:**
+
+alojamientos
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/b1ac40d7a762aec568d2dc60aec4b73754a794d9/tablas/Reto12I.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH trampas as(
+	SELECT id, price, neighbourhood_cleansed, review_scores_rating, 
+		PERCENT_RANK() OVER (PARTITION BY neighbourhood_cleansed ORDER BY price DESC) as percent_rank
+	FROM alojamientos
+)
+
+SELECT id, neighbourhood_cleansed, review_scores_rating
+FROM trampas
+WHERE percent_rank > 0.9
+		AND review_scores_rating < 4
+					
+```
+</details>
+
+### 📝 Reto 13
+**Problema:** Calcula la diferencia de precio promedio entre los alojamientos que tienen “Air conditioning” en su lista de amenities y los que no, agrupados por tipo de alojamiento. Muestra el resultado ordenado de mayor a menor diferencia.  
+**Estructura de las tablas:**
+
+alojamientos
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/b1ac40d7a762aec568d2dc60aec4b73754a794d9/tablas/Reto13I.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT
+    room_type,
+    AVG(CASE WHEN amenities LIKE '%Air conditioning%' THEN price END) as precio_con_aire,
+    AVG(CASE WHEN amenities NOT LIKE '%Air conditioning%' THEN price END) as precio_sin_aire,
+    AVG(CASE WHEN amenities LIKE '%Air conditioning%' THEN price END) -
+    AVG(CASE WHEN amenities NOT LIKE '%Air conditioning%' THEN price END) as diferencia
+FROM alojamientos
+GROUP BY room_type
+ORDER BY diferencia DESC
+					
+```
+</details>
+
+### 📝 Reto 14
+**Problema:** Muestra id, barrio, precio y una nueva columna que calcule el precio promedio del piso actual y los 3 anteriores (según el orden de id) dentro de cada barrio y redondeado a dos decimales. 
+**Estructura de las tablas:**
+
+alojamientos
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/b1ac40d7a762aec568d2dc60aec4b73754a794d9/tablas/Reto14I.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT id, neighbourhood_cleansed, price, 
+			ROUND(AVG(price) OVER (PARTITION BY neighbourhood_cleansed ORDER BY id ROWS BETWEEN 3 PRECEDING AND CURRENT ROW), 2) as rolling_avg_3
+FROM alojamientos
+					
+```
+</details>
+
 ## 🔴 Nivel: Difícil 
 *Foco en: Funciones ventana, CTEs y JOINS complejos, UNIONS*
 
@@ -931,5 +1007,31 @@ FROM super_customer
 WHERE product_count = (
           SELECT COUNT(DISTINCT product_category) FROM products
           )
+```
+</details>
+
+### 📝 Reto 03
+**Problema:**  Queremos comparar rápidamente cuanto cuesta una habitación privada vs. una apartamento entero en cada barrio, pero queremos una fila por barrio con los precios en columnas separadas. Consulta para para generar una tabla con las columnas barrio, precio_privada, precio_entera y diferencia. 
+
+**Estructura de las tablas:**
+
+barrios
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/b1ac40d7a762aec568d2dc60aec4b73754a794d9/tablas/Reto3D.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT
+    neighbourhood_cleansed,
+    AVG(CASE WHEN room_type = 'Private room' THEN price END) AS precio_privada,
+    AVG(CASE WHEN room_type = 'Entire home/apt' THEN price END) AS precio_entero,
+    AVG(CASE WHEN room_type = 'Entire home/apt' THEN price END) - AVG(CASE WHEN room_type = 'Private room' THEN price END) as diferencia
+FROM barrios
+GROUP BY neighbourhood_cleansed
+HAVING AVG(CASE WHEN room_type = 'Private room' THEN price END) IS NOT NULL AND AVG(CASE WHEN room_type = 'Entire home/apt' THEN price END) IS NOT NULL
 ```
 </details>
