@@ -413,6 +413,84 @@ FROM items_per_order;
 ```
 </details>
 
+### 📝 Reto 18
+**Problema:** Añade una columna a la siguiente tabla que clasifique los ids según el precio en estas tres categorías:
+* Menos de 50 → Económico
+* Entre 50 y 150 → Estandar
+* Mas de 150 → Premium
+
+Muestra id, precio y categoria ordenado por número de id. 
+
+**Estructura de las tablas:**
+
+list
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/6fd8b313f66d54396e0bc6735ebe33a41b69ca33/tablas/Reto18-19.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT id, price,
+	CASE 
+	WHEN price < 50 THEN 'Economico'
+	WHEN price BETWEEN 50 AND 150 THEN 'Estandar'
+	WHEN price > 150 THEN ' Premium'
+	END as categoría
+FROM list
+ORDER BY id
+```
+</details>
+
+### 📝 Reto 19
+**Problema:** Muestra todos los ids con un precio mayor al promedio de toda la tabla. Muestra el resultado en orden DESC según el precio. 
+
+**Estructura de las tablas:**
+
+list
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/6fd8b313f66d54396e0bc6735ebe33a41b69ca33/tablas/Reto18-19.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT id, price
+FROM list 
+WHERE price > (
+		SELECT AVG(price)
+		FROM list)
+ORDER BY price DESC
+```
+</details>
+
+### 📝 Reto 20
+**Problema:** Obtén los 3 alojamientos con mayor número de reseñas para cada barrio
+
+**Estructura de las tablas:**
+
+alojamientos
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/6fd8b313f66d54396e0bc6735ebe33a41b69ca33/tablas/Reto20.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH ranking as(
+	SELECT id, neighbourhood_cleansed, number_of_reviews,
+	ROW_NUMBER () OVER (PARTITION BY neighbourhood_cleansed ORDER BY number_of_reviews DESC) as ranking
+	FROM alojamientos)
+
+SELECT id, neighbourhood_cleansed, number_of_reviews
+FROM ranking
+WHERE ranking <= 3
+```
+</details>
+
 ## 🟡 Nivel: Intermedio
 *Foco en: Funciones ventana, CTEs, JOINS complejos y consultas temporales*
 
