@@ -927,6 +927,76 @@ FROM alojamientos
 ```
 </details>
 
+### 📝 Reto 15
+**Problema:** Realiza una consulta para clasificar los barrios dentro de cada distrito según el precio por m2 de más caro a mas barato. Debes mostrar el nombre del distrio, el barrio, el número de inmuebles disponibles, el precio por m2 redondeado a 2 decimales, la renta media y el índice de seguridad. Ordena los resultados según el distrito y el ranking.  
+**Estructura de las tablas:**
+
+inmuebles
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D.png)
+
+dim_barrios
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D_2.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT
+d.distrito,
+f.barrio_oficial,
+COUNT(f.id_inmueble) as oferta_disponible,
+ROUND(AVG(f.precio_m2), 0) as precio_m2_medio,
+d.renta_media,
+d.seguridad_index,
+RANK() OVER(PARTITION BY d.distrito ORDER BY AVG(f.precio_m2) DESC) as ranking_caro_distrito
+FROM inmuebles f
+JOIN dim_barrios d ON f.barrio_oficial = d.barrio_oficial
+GROUP BY d.distrito, f.barrio_oficial, d.renta_media, d.seguridad_index
+ORDER BY d.distrito, ranking_caro_distrito;
+					
+```
+</details>
+
+### 📝 Reto 16
+**Problema:** Compara el precio medio de los pisos marcados como “Infravalorados” contra el precio medio real del barrio al que pertenecen.  Muestra barrio, precio real, precio de infravalorados, diferencia bruta y conteo de pisos infravalorados por barrio. Muestra el resultado ordenado de mayor a menor diferencia. 
+**Estructura de las tablas:**
+
+inmuebles
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D.png)
+
+dim_barrios
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D_2.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT 
+    f.barrio_oficial,
+    -- Precio medio del mercado sin infravalorados
+    ROUND(AVG(CASE WHEN f.infravalorado = FALSE THEN f.precio END), 0) as precio_mercado,
+    
+    -- Precio medio de los infravalorados
+    ROUND(AVG(CASE WHEN f.infravalorado = TRUE THEN f.precio END), 0) as precio_oportunidad,
+    
+    -- Diferencia
+    ROUND(
+        AVG(CASE WHEN f.infravalorado = FALSE THEN f.precio END) - 
+        AVG(CASE WHEN f.infravalorado = TRUE THEN f.precio END)
+    , 0) as margen_bruto_medio,
+    
+    -- Conteo de infravalorados
+    SUM(CASE WHEN f.infravalorado = TRUE THEN 1 ELSE 0 END) as n_chollos
+FROM inmuebles f
+GROUP BY f.barrio_oficial
+HAVING SUM(CASE WHEN f.infravalorado = TRUE THEN 1 ELSE 0 END) > 0 
+ORDER BY margen_bruto_medio DESC;
+```
+</details>
 ## 🔴 Nivel: Difícil 
 *Foco en: Funciones ventana, CTEs y JOINS complejos, UNIONS*
 
@@ -1035,3 +1105,53 @@ GROUP BY neighbourhood_cleansed
 HAVING AVG(CASE WHEN room_type = 'Private room' THEN price END) IS NOT NULL AND AVG(CASE WHEN room_type = 'Entire home/apt' THEN price END) IS NOT NULL
 ```
 </details>
+
+### 📝 Reto 03
+**Problema:**  Calcula cuántos años de sueldo íntegro necesita un vecino de un barrio para comprar un piso ahí. Clasifica los resultados en tres categorías según la cantidad de años: 
+
+- Más de 15 → gentrificación
+- Menos de 8 → oportunidad local
+- Resto → Equlibrado
+
+Ordena el resultado según los años de esfuerzo de mayor a menor.
+
+**Estructura de las tablas:**
+
+inmuebles
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D.png)
+
+dim_barrios
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D_2.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH metricas_barrio AS (
+    SELECT 
+        f.barrio_oficial,
+        AVG(f.precio) as precio_medio_zona,
+        d.renta_media
+    FROM fact_inmuebles f
+    JOIN dim_barrios d ON f.barrio_oficial = d.barrio_oficial
+    GROUP BY f.barrio_oficial, d.renta_media
+)
+SELECT 
+    barrio_oficial,
+    ROUND(precio_medio_zona, 0) as precio_medio,
+    renta_media,
+    -- Cálculo de años de esfuerzo
+    ROUND(precio_medio_zona / NULLIF(renta_media, 0), 1) as anos_esfuerzo_fiscal,
+    CASE 
+        WHEN (precio_medio_zona / renta_media) > 15 THEN 'Gentrificación'
+        WHEN (precio_medio_zona / renta_media) < 8 THEN 'Oportunidad Local'
+        ELSE 'Equilibrado'
+    END as estado_mercado
+FROM metricas_barrio
+ORDER BY anos_esfuerzo_fiscal DESC
+```
+</details>
+
