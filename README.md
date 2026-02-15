@@ -467,29 +467,55 @@ ORDER BY price DESC
 </details>
 
 ### 📝 Reto 20
-**Problema:** Obtén los 3 alojamientos con mayor número de reseñas para cada barrio
+**Problema:** Calcula el precio medio, precio mínimo y precio máximo por cada número de habitaicones. El resultado debe estar ordenado de mayor a menor número de habs. 
 
 **Estructura de las tablas:**
 
-alojamientos
+inmuebles
 
-![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/6fd8b313f66d54396e0bc6735ebe33a41b69ca33/tablas/Reto20.png)
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D.png)
 
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
   
   ```sql
-WITH ranking as(
-	SELECT id, neighbourhood_cleansed, number_of_reviews,
-	ROW_NUMBER () OVER (PARTITION BY neighbourhood_cleansed ORDER BY number_of_reviews DESC) as ranking
-	FROM alojamientos)
-
-SELECT id, neighbourhood_cleansed, number_of_reviews
-FROM ranking
-WHERE ranking <= 3
+SELECT habitaciones, AVG(precio) as avg_price,
+			 MIN(precio) as min_price, MAX(precio) as max_price
+FROM inmuebles
+GROUP BY habitaciones
+ORDER BY habitaciones DESC
 ```
 </details>
+
+### 📝 Reto 21
+**Problema:** Muestra el promedio del Precio_m2 para cada distrito, sin incluir aquellos inmuebles clasificados como Outliers. 
+
+**Estructura de las tablas:**
+
+inmuebles
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D.png)
+
+dim_barrios
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D_2.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT b.distrito, AVG(i.precio_m2) as promedio_precio_m2
+FROM inmuebles i
+JOIN dim_barrios b ON i.barrio_oficial = b.barrio_oficial
+WHERE i.es_outlier IS FALSE
+GROUP BY b.distrito
+```
+</details>
+
+
+
 
 ## 🟡 Nivel: Intermedio
 *Foco en: Funciones ventana, CTEs, JOINS complejos y consultas temporales*
@@ -997,6 +1023,60 @@ HAVING SUM(CASE WHEN f.infravalorado = TRUE THEN 1 ELSE 0 END) > 0
 ORDER BY margen_bruto_medio DESC;
 ```
 </details>
+
+### 📝 Reto 17
+**Problema:** Obtén los 3 alojamientos con mayor número de reseñas para cada barrio
+
+**Estructura de las tablas:**
+
+alojamientos
+
+![Tabla](https://github.com/Nachoide100/Practicar-SQL/blob/6fd8b313f66d54396e0bc6735ebe33a41b69ca33/tablas/Reto20.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH ranking as(
+	SELECT id, neighbourhood_cleansed, number_of_reviews,
+	ROW_NUMBER () OVER (PARTITION BY neighbourhood_cleansed ORDER BY number_of_reviews DESC) as ranking
+	FROM alojamientos)
+
+SELECT id, neighbourhood_cleansed, number_of_reviews
+FROM ranking
+WHERE ranking <= 3
+```
+</details>
+
+### 📝 Reto 18
+**Problema:**  Muestra los tres pisos con el precio_m2 cuadrado más barato dentro de cada barrio. Muestra titulo, barrio, precio_2 y posición en el ranking. 
+
+**Estructura de las tablas:**
+
+inmuebles
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH ranking_3 as (
+SELECT titulo, barrio_oficial, precio_m2, 
+		DENSE_RANK () OVER (PARTITION BY barrio_oficial ORDER BY precio_m2) as ranking
+FROM inmuebles
+)
+
+SELECT titulo, barrio_oficial, precio_m2, ranking
+FROM ranking_3
+WHERE ranking < 4
+```
+</details>
+
+
 ## 🔴 Nivel: Difícil 
 *Foco en: Funciones ventana, CTEs y JOINS complejos, UNIONS*
 
