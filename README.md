@@ -1076,6 +1076,60 @@ WHERE ranking < 4
 ```
 </details>
 
+### 📝 Reto 19
+**Problema:**  Realiza una consulta para encontrar los barrios cuya media de precio se sus inmuebles sea superior a la media global del precio de los inmuebles. 
+
+**Estructura de las tablas:**
+
+inmuebles
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT barrio_oficial, AVG(precio) as avg_precio
+FROM inmuebles
+GROUP BY barrio_oficial
+HAVING AVG(precio) > (
+			SELECT AVG(precio)
+			FROM inmuebles
+)
+```
+</details>
+
+### 📝 Reto 20
+**Problema:**  Realiza una consulta para dividir los barrios en dos grupos según su renta media (<25.000 → ‘Renta Alta’ y el resto ‘Renta Media / Baja). Para cada grupo, calcula el promedio del precio_m2 y el índice de seguridad promedio. 
+
+**Estructura de las tablas:**
+
+inmuebles
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D.png)
+
+dim_barrios
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D_2.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT 
+	AVG(i.precio_m2) as avg_precio_m2, AVG(b.seguridad_index) as avg_seg_index, 
+	CASE 
+	 WHEN b.renta_media > 25000 THEN 'Renta Alta'
+	 WHEN b.renta_media <= 25000 THEN 'Renta Media / Baja'
+	 END AS clasificacion_renta
+FROM dim_barrios b
+JOIN inmuebles i ON i.barrio_oficial = b.barrio_oficial
+GROUP BY clasificacion_renta
+```
+</details>
+
 
 ## 🔴 Nivel: Difícil 
 *Foco en: Funciones ventana, CTEs y JOINS complejos, UNIONS*
