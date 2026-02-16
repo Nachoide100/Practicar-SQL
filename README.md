@@ -1190,6 +1190,28 @@ ORDER BY distrito, porcentaje DESC;
 ```
 </details>
 
+### 📝 Reto 22
+**Problema:**  Encuentra los barrios que tengan una seguridad_index superior a 80 pero cuya renta_media sea inferior a la media global de toda la ciudad.
+
+**Estructura de las tablas:**
+
+dim_barrios
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D_2.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT barrio_oficial, seguridad_index, renta_media
+FROM dim_barrios
+WHERE seguridad_index > 80
+		AND renta_media < (
+			SELECT AVG(renta_media)
+			FROM dim_barrios
+		)
+```
+</details>
 
 ## 🔴 Nivel: Difícil 
 *Foco en: Funciones ventana, CTEs y JOINS complejos, UNIONS*
