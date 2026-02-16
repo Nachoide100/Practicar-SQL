@@ -514,6 +514,29 @@ GROUP BY b.distrito
 ```
 </details>
 
+### 📝 Reto 21
+**Problema:** Muesta el precio_m2 promedio y el número total de inmuebles para cada tipo de vivienda pero solo para aquellos inmuebles que tengan entre 2 y 4 habitaciones y cuya superficie sea mayor a 70 m2. Excluye los outliers.
+
+**Estructura de las tablas:**
+
+inmuebles
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT AVG(precio_m2) as avg_precio_m2, COUNT(id_inmueble) as count, tipo_vivienda
+FROM inmuebles
+WHERE habitaciones BETWEEN 2 AND 4
+	AND metros > 70 
+	AND es_outlier IS FALSE
+GROUP BY tipo_vivienda
+```
+</details>
+
 
 
 
@@ -1127,6 +1150,43 @@ SELECT
 FROM dim_barrios b
 JOIN inmuebles i ON i.barrio_oficial = b.barrio_oficial
 GROUP BY clasificacion_renta
+```
+</details>
+
+### 📝 Reto 21
+**Problema:**  Calcula el porcentaje de inmuebles que aporta cada barrio_oficial a su respectivo distrito. El resultado debe mostrar: Distrito, Barrio y Porcentaje. 
+**Estructura de las tablas:**
+
+inmuebles
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D.png)
+
+dim_barrios
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ec80130904319fbb611206721694604a643c03cd/tablas/Reto15I%2C%2016I%2C%204D_2.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH conteo_por_barrio AS (
+    SELECT 
+        b.distrito, 
+        b.barrio_oficial,
+        COUNT(*) as total_inmuebles_barrio
+    FROM inmuebles i
+    JOIN dim_barrios b ON i.barrio_oficial = b.barrio_oficial
+    GROUP BY b.distrito, b.barrio_oficial
+)
+
+SELECT 
+    distrito,
+    barrio_oficial,
+    total_inmuebles_barrio,
+    SUM(total_inmuebles_barrio) OVER(PARTITION BY distrito) as total_inmuebles_distrito,
+    (total_inmuebles_barrio * 100.0 / SUM(total_inmuebles_barrio) OVER(PARTITION BY distrito)) as porcentaje
+FROM conteo_por_barrio
+ORDER BY distrito, porcentaje DESC;
 ```
 </details>
 
