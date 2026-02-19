@@ -1357,7 +1357,7 @@ HAVING AVG(CASE WHEN room_type = 'Private room' THEN price END) IS NOT NULL AND 
 ```
 </details>
 
-### 📝 Reto 03
+### 📝 Reto 04
 **Problema:**  Calcula cuántos años de sueldo íntegro necesita un vecino de un barrio para comprar un piso ahí. Clasifica los resultados en tres categorías según la cantidad de años: 
 
 - Más de 15 → gentrificación
@@ -1405,4 +1405,69 @@ FROM metricas_barrio
 ORDER BY anos_esfuerzo_fiscal DESC
 ```
 </details>
+
+### 📝 Reto 05
+**Problema:**   Se piensa que para conseguir un buen puesto hay que saber Python y SQL. Encuentra cuántas ofertas de trabajo requieren específicamente ambas habilidades simultáneamente. Muestra el nombre de la empresa y el título del puesto de aquellas que piden este ‘combo’. 
+
+**Estructura de las tablas:**
+
+dim_ofertas
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/fdef20618ac3329b0a485afd3624d63c0eaed4ba/tablas/23M.png)
+
+
+fact_skills
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/fdef20618ac3329b0a485afd3624d63c0eaed4ba/tablas/23M_1.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT 
+    o.company, 
+    o.title
+FROM dim_ofertas o
+JOIN fact_skills s ON o.job_id = s.job_id
+WHERE s.skill IN ('Python', 'SQL') -- Paso 1: Filtramos solo las filas que tengan una de las dos
+GROUP BY o.job_id, o.company, o.title -- Paso 2: Agrupamos por oferta
+HAVING COUNT(DISTINCT s.skill) = 2; -- Paso 3: Nos quedamos solo con las que tienen AMBAS
+```
+</details>
+
+### 📝 Reto 06
+**Problema:**   Para cada tipo de modalidad de trabajo (teleworking), calcula el porcentaje de ofertas que requieren la habilidad ‘Excel’. Compara así, si el teletrabajo tiene mayor dependencia de esta herramienta que el trabajo presencial.
+
+**Estructura de las tablas:**
+
+dim_ofertas
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/fdef20618ac3329b0a485afd3624d63c0eaed4ba/tablas/23M.png)
+
+
+fact_skills
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/fdef20618ac3329b0a485afd3624d63c0eaed4ba/tablas/23M_1.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT 
+    o.teleworking,
+    COUNT(DISTINCT o.job_id) as total_ofertas,
+    COUNT(DISTINCT CASE WHEN s.skill = 'Excel' THEN o.job_id END) as ofertas_con_excel,
+    -- Cálculo del porcentaje
+    (COUNT(DISTINCT CASE WHEN s.skill = 'Excel' THEN o.job_id END) * 100.0 / 
+     COUNT(DISTINCT o.job_id)) as porcentaje_excel
+FROM dim_ofertas o
+LEFT JOIN fact_skills s ON o.job_id = s.job_id
+GROUP BY o.teleworking;
+```
+</details>
+
+
+
 
