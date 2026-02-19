@@ -1213,6 +1213,41 @@ WHERE seguridad_index > 80
 ```
 </details>
 
+### 📝 Reto 23
+**Problema:** Muestra el top 3 de las habilidades más demandadas para cada ciudad. El resultado debe incluir: Ciudad, Habilidad y el número de ofertas que la piden. 
+
+**Estructura de las tablas:**
+
+dim_ofertas
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/fdef20618ac3329b0a485afd3624d63c0eaed4ba/tablas/23M.png)
+
+
+fact_skills
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/fdef20618ac3329b0a485afd3624d63c0eaed4ba/tablas/23M_1.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH ranking_tech AS (
+    SELECT 
+        o.city, 
+        s.skill, 
+        COUNT(*) as numero_ofertas, 
+        ROW_NUMBER() OVER(PARTITION BY o.city ORDER BY COUNT(*) DESC) as ranking 
+    FROM dim_ofertas o
+    JOIN fact_skills s ON o.job_id = s.job_id
+    GROUP BY o.city, s.skill
+)
+SELECT city, skill, numero_ofertas
+FROM ranking_tech
+WHERE ranking <= 3
+ORDER BY city, ranking;
+```
+</details>
+
 ## 🔴 Nivel: Difícil 
 *Foco en: Funciones ventana, CTEs y JOINS complejos, UNIONS*
 
