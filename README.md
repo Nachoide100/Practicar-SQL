@@ -1400,9 +1400,9 @@ ORDER BY city, ranking;
 
 **Estructura de las tablas:**
 
-dim_barrios
+reservas_padel
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ea988461762d85764bbe086d33266c022769d8a9/tablas/24I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
@@ -1425,9 +1425,9 @@ WHERE ranking < 2
 
 **Estructura de las tablas:**
 
-dim_barrios
+reservas_padel
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ea988461762d85764bbe086d33266c022769d8a9/tablas/25I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
@@ -1455,9 +1455,9 @@ ORDER BY Fecha;
 
 **Estructura de las tablas:**
 
-dim_barrios
+spotify_tracks
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ea988461762d85764bbe086d33266c022769d8a9/tablas/26I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
@@ -1480,9 +1480,9 @@ WHERE ranking = 1
 
 **Estructura de las tablas:**
 
-dim_barrios
+spotify_tracks
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ea988461762d85764bbe086d33266c022769d8a9/tablas/27I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
@@ -1512,9 +1512,9 @@ ORDER BY diff_seconds_over_mean DESC;
 
 **Estructura de las tablas:**
 
-dim_barrios
+spotify_tracks
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/ea988461762d85764bbe086d33266c022769d8a9/tablas/28I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
