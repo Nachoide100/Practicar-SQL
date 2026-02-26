@@ -514,7 +514,7 @@ GROUP BY b.distrito
 ```
 </details>
 
-### 📝 Reto 21
+### 📝 Reto 22
 **Problema:** Muesta el precio_m2 promedio y el número total de inmuebles para cada tipo de vivienda pero solo para aquellos inmuebles que tengan entre 2 y 4 habitaciones y cuya superficie sea mayor a 70 m2. Excluye los outliers.
 
 **Estructura de las tablas:**
@@ -537,6 +537,153 @@ GROUP BY tipo_vivienda
 ```
 </details>
 
+### 📝 Reto 23
+**Problema:** Compara el promedio de Precio_Euro entre los días laborales y los findes de semana. Mapea la columna Es_Fin_Semana para que no aparezcan 1 y 0. 
+
+**Estructura de las tablas:**
+
+reservas_padel
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/c1d21b8e5602c389760fc0e1d3db2ffb1d2e8cbe/tablas/23F.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT AVG("Precio_Euro"), 
+	CASE
+		WHEN "Es_Fin_Semana" = 1 THEN 'Fin de semana'
+		ELSE 'Día Laboral'
+		END AS Dia
+FROM reservas_padel
+GROUP BY Dia
+```
+</details>
+
+### 📝 Reto 24
+**Problema:**  Clasifica las reservas en tres franjas horarias (mañana, tarde y noche) y cuenta cuántas reservas ‘Ocupadas’ hubo en cada una. 
+
+**Estructura de las tablas:**
+
+reservas_padel
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/c1d21b8e5602c389760fc0e1d3db2ffb1d2e8cbe/tablas/24F.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT 
+    CASE
+        WHEN Hora < '14:00' THEN 'Mañana'
+        WHEN Hora < '20:00' THEN 'Tarde'
+        ELSE 'Noche'
+    END AS franja_horaria,
+    COUNT(*) as total_reservas
+FROM reservas_padel
+WHERE Estado = 'Ocupada'
+GROUP BY franja_horaria
+```
+</details>
+
+### 📝 Reto 25
+**Problema:**  Calcula el porcentaje de ocupación de las pistas para cada club. Muestra el resultado ordenado de mayor a menor. 
+**Estructura de las tablas:**
+
+reservas_padel
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/c1d21b8e5602c389760fc0e1d3db2ffb1d2e8cbe/tablas/25F.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT "Club",(COUNT(CASE WHEN "Estado" = 'Ocupada' THEN 1 END) * 100.0) / COUNT(*) as tasa_ocupacion
+FROM reservas_padel
+GROUP BY 1
+ORDER BY tasa_ocupacion DESC
+```
+</details>
+
+### 📝 Reto 26
+**Problema:**  Ahora queremos identificar los clubes que están operando mucho pero ganando poco. Encuentra los clubes con un ingreso total inferior a 5.000$ y con más de 200 registros en el sistema. 
+
+**Estructura de las tablas:**
+
+reservas_padel
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/c1d21b8e5602c389760fc0e1d3db2ffb1d2e8cbe/tablas/26F.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT "Club", SUM("Ingreso_Generado") as ingresos_totales, COUNT(*) num_reserva
+FROM reservas_padel
+GROUP BY "Club"
+HAVING SUM("Ingreso_Generado") < 5000
+		AND COUNT(*) > 200
+```
+</details>
+
+### 📝 Reto 27
+**Problema:**  Calcula el promedio de popularity y de energy para cada género. Filtra los resultados para mostrar solo aquellos géneros que tengas más de 100 canciones en el dataset y ordénalos por popularidad de mayor a menor.  
+
+**Estructura de las tablas:**
+
+spotify_tracks
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/c1d21b8e5602c389760fc0e1d3db2ffb1d2e8cbe/tablas/27F.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT track_genre, AVG(popularity) as avg_popularity, 
+		AVG(energy) as avg_energy
+FROM spotify_tracks
+GROUP BY track_genre
+HAVING COUNT(*) > 100
+ORDER BY avg_popularity DESC
+```
+</details>
+
+### 📝 Reto 28
+**Problema:**  Crea una consulta que clasifique las canciones en tres categorías según sus atributos:
+
+- **'Fiesta'**: Si `danceability` > 0.7 y `energy` > 0.7.
+- **'Relajación'**: Si `danceability` < 0.4 y `acousticness` > 0.6.
+- **'Estándar'**: Cualquier otro caso.
+- 
+Muestra cuántas canciones hay en cada categoría y su popularidad media. 
+
+**Estructura de las tablas:**
+
+spotify_tracks
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/c1d21b8e5602c389760fc0e1d3db2ffb1d2e8cbe/tablas/28F.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT CASE
+		WHEN danceability > 0.7 AND energy > 0.7 THEN 'Fiesta'
+		WHEN danceability < 0.4 AND acousticness > 0.6 THEN 'Relajación'
+		ELSE 'Estándar'
+		END AS Mood, 
+		COUNT(*) as total_songs, 
+		AVG(popularity) as avg_popularity
+FROM spotify_tracks
+GROUP BY Mood
+```
+</details>
 
 
 
