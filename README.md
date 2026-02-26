@@ -1395,6 +1395,141 @@ ORDER BY city, ranking;
 ```
 </details>
 
+### 📝 Reto 24
+**Problema:**  Identifica para cada club la hora del día que ha generado el mayor ingreso total. El resultado debe mostrar nombre del club, hora e ingreso total a esa hora. 
+
+**Estructura de las tablas:**
+
+dim_barrios
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH ranking as (
+	SELECT "Club", "Hora", SUM("Ingreso_Generado") as ingresos, 
+		RANK () OVER(PARTITION BY "Club" ORDER BY SUM("Ingreso_Generado") DESC) as ranking
+	FROM reservas_padel
+	GROUP BY "Club", "Hora"
+)
+SELECT "Club", "Hora", ingresos
+FROM ranking
+WHERE ranking < 2
+```
+</details>
+
+### 📝 Reto 25
+**Problema:**  Calcula el ingreso total por cada día y añade una columna que muestre el ingreso acumulado (la suma del día actual más todos los anteriores). 
+
+**Estructura de las tablas:**
+
+dim_barrios
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH ingresos_por_dia AS (
+    SELECT 
+        Fecha, 
+        SUM(Ingreso_Generado) as ingreso_del_dia
+    FROM reservas_padel
+    GROUP BY Fecha
+)
+
+SELECT 
+    Fecha,
+    ingreso_del_dia,
+    SUM(ingreso_del_dia) OVER (ORDER BY Fecha) as acumulado_total
+FROM ingresos_por_dia
+ORDER BY Fecha;
+```
+</details>
+
+### 📝 Reto 26
+**Problema:**  Para cada track_genre, encuentra el nombre del artista y el nombre de la canción que tenga la popularidad más alta dentro de ese género. 
+
+**Estructura de las tablas:**
+
+dim_barrios
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH rankings as(
+	SELECT track_genre, artists, track_name, popularity,
+		RANK() OVER(PARTITION BY track_genre ORDER BY popularity DESC) as ranking
+	FROM spotify_tracks
+)
+
+SELECT track_genre, artists, track_name, popularity
+FROM rankings
+WHERE ranking = 1
+```
+</details>
+
+### 📝 Reto 27
+**Problema:**  Muestra el nombre de la canción, el género y su duración, pero solo de aquellas canciones que duren más que el promedio de su propio género. Además, añade una columna que calcule la diferencia en segundos respecto a esa media. 
+
+**Estructura de las tablas:**
+
+dim_barrios
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH means AS (
+    SELECT 
+        track_name, 
+        track_genre, 
+        duration_ms, 
+        AVG(duration_ms) OVER(PARTITION BY track_genre) as mean_genre
+    FROM spotify_tracks
+) 
+SELECT 
+    track_name, 
+    track_genre, 
+    duration_ms, 
+    ROUND((duration_ms - mean_genre) / 1000.0, 2) as diff_seconds_over_mean
+FROM means
+WHERE duration_ms > mean_genre
+ORDER BY diff_seconds_over_mean DESC;
+```
+</details>
+
+### 📝 Reto 28
+**Problema:**  Por cada género, muestra dos columnas: una con la popularidad media de las canciones explícitas y otra con la popularidad media de las no explícitas. 
+
+**Estructura de las tablas:**
+
+dim_barrios
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT 
+    track_genre, 
+    AVG(CASE WHEN explicit = TRUE THEN popularity END) AS pop_explicita,
+    AVG(CASE WHEN explicit = FALSE THEN popularity END) AS pop_limpia
+FROM spotify_tracks
+GROUP BY track_genre
+ORDER BY track_genre
+```
+</details>
+
 ## 🔴 Nivel: Difícil 
 *Foco en: Funciones ventana, CTEs y JOINS complejos, UNIONS*
 
