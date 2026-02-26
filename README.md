@@ -1768,7 +1768,7 @@ Además:
 
 reservas_padel
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/be02886eb8916395656acd55528951ac27b4380e/tablas/7D.png)
 
 
 <details>
@@ -1805,7 +1805,7 @@ ORDER BY t.ranking_nacional
 
 spotify_tracks
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/be02886eb8916395656acd55528951ac27b4380e/tablas/8D.png)
 
 
 <details>
