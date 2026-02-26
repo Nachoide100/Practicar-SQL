@@ -1750,6 +1750,90 @@ GROUP BY o.teleworking;
 ```
 </details>
 
+### 📝 Reto 07
+**Problema:**  Escribe una única consulta que devuelva una tabla con la siguiente información por cada Club:
+
+- **Nombre del Club**.
+- **Ingreso_Total**: Suma de todo el dinero generado.
+- **Tasa_Ocupacion**: Porcentaje de slots 'Ocupada' sobre el total del club.
+- **Ranking_Nacional**: Su posición (1º, 2º, 3º...) comparado con los demás clubes basándote en el ingreso total.
+- **Pista_Estrella**: El nombre de la pista (`Nombre_Pista`) que **más dinero** ha generado dentro de ese club específico
+
+Además: 
+
+- **Filtro Obligatorio:** Solo deben aparecer en el informe final los clubes que hayan generado **más de 5.000€** en total.
+- **Ordenación:** El informe debe estar ordenado por el `Ranking_Nacional` (el club que más gana, arriba).
+
+**Estructura de las tablas:**
+
+reservas_padel
+
+![Tabla user_transactions]
 
 
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH totales_club AS(
+	SELECT "Club", SUM("Ingreso_Generado") as ingresos_totales, 
+			(COUNT(CASE WHEN "Estado" = 'Ocupada' THEN 1 END) * 100.0 / COUNT(*)) as tasa_ocupacion,
+			ROW_NUMBER() OVER(ORDER BY SUM("Ingreso_Generado") DESC) as ranking_nacional
+	FROM reservas_padel
+	GROUP BY "Club"
+),
+ranking_pistas AS(
+	SELECT "Club", "Nombre_Pista", SUM("Ingreso_Generado") as ingresos_totales, 
+			ROW_NUMBER() OVER(PARTITION BY "Club" ORDER BY SUM("Ingreso_Generado") DESC) as ranking_pistas
+	FROM reservas_padel
+	GROUP BY "Club", "Nombre_Pista"
+)
+
+SELECT r."Club", t."ingresos_totales", t."tasa_ocupacion", t."ranking_nacional", r."Nombre_Pista" as pista_estrella
+FROM totales_club t
+JOIN ranking_pistas r ON t."Club" = r."Club"
+WHERE r."ranking_pistas" = 1 
+		AND t."ingresos_totales" > 5000
+ORDER BY t.ranking_nacional
+```
+</details>
+
+### 📝 Reto 08
+**Problema:**  Escribe una consulta que devuelva, para cada género, el nombre del artista que tiene le promedio de popularidad más alto, pero con una condición: el artista debe tener al menos 5 canciones dentro de ese género. Muestra género, artista, popularidad media y total de canciones. 
+
+**Estructura de las tablas:**
+
+spotify_tracks
+
+![Tabla user_transactions]
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH stats_artistas AS (
+    SELECT 
+        track_genre, 
+        artists, 
+        AVG(popularity) as avg_popularity,
+        COUNT(*) as total_canciones
+    FROM spotify_tracks
+    GROUP BY track_genre, artists
+    HAVING COUNT(*) >= 5 
+),
+ranking_final AS (
+    SELECT 
+        track_genre, 
+        artists, 
+        avg_popularity, 
+        total_canciones,
+        RANK() OVER(PARTITION BY track_genre ORDER BY avg_popularity DESC) as rnk
+    FROM stats_artistas
+)
+SELECT track_genre, artists, ROUND(avg_popularity, 2), total_canciones
+FROM ranking_final
+WHERE rnk = 1
+```
+</details>
 
