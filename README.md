@@ -692,7 +692,7 @@ GROUP BY Mood
 
 spotify_tracks
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/24916495679f3d1fb4dd62aff4ebfa6e1cd386ad/tablas/29F.png)
 
 
 <details>
@@ -1563,7 +1563,7 @@ ORDER BY track_genre
 
 spotify_tracks
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/24916495679f3d1fb4dd62aff4ebfa6e1cd386ad/tablas/29I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
@@ -1584,7 +1584,7 @@ ORDER BY avg_diff DESC
 
 spotify_tracks
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/24916495679f3d1fb4dd62aff4ebfa6e1cd386ad/tablas/30I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
@@ -1609,7 +1609,7 @@ ORDER BY num_cuartil
 
 spotify_tracks
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/24916495679f3d1fb4dd62aff4ebfa6e1cd386ad/tablas/31I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
@@ -1631,7 +1631,7 @@ LIMIT 10
 
 spotify_tracks
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/24916495679f3d1fb4dd62aff4ebfa6e1cd386ad/tablas/32I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
@@ -1663,7 +1663,7 @@ WHERE ranking = 1
 
 spotify_tracks
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/24916495679f3d1fb4dd62aff4ebfa6e1cd386ad/tablas/33I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
@@ -1687,9 +1687,9 @@ ORDER BY date;
 
 **Estructura de las tablas:**
 
-spotify_tracks
+google_stock
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/24916495679f3d1fb4dd62aff4ebfa6e1cd386ad/tablas/34I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
@@ -1720,9 +1720,9 @@ ORDER BY pct_exceso_real DESC;
 
 **Estructura de las tablas:**
 
-spotify_tracks
+google_stock
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/24916495679f3d1fb4dd62aff4ebfa6e1cd386ad/tablas/35I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
@@ -1753,9 +1753,9 @@ ORDER BY date;
 
 **Estructura de las tablas:**
 
-spotify_tracks
+google_stock
 
-![Tabla user_transactions]
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/24916495679f3d1fb4dd62aff4ebfa6e1cd386ad/tablas/36I.png)
 
 <details>
   <summary><b>Ver Solución SQL 🔑</b></summary>
