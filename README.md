@@ -685,6 +685,32 @@ GROUP BY Mood
 ```
 </details>
 
+### 📝 Reto 29
+**Problema:**  Encuentra los artistas que aparecen en más de 3 géneros distintos y que tienen una popularidad media superior a 70 en total. Muestra nombre del artista, número de géneros, popularidad media y todo ordenado de mayor a menor popularidad.  
+
+**Estructura de las tablas:**
+
+spotify_tracks
+
+![Tabla user_transactions]
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT 
+    artists, 
+    COUNT(DISTINCT track_genre) as num_generos, 
+    ROUND(AVG(popularity), 2) as popularidad_media
+FROM spotify_tracks
+GROUP BY artists
+HAVING COUNT(DISTINCT track_genre) > 3 
+   AND AVG(popularity) > 70
+ORDER BY popularidad_media DESC;
+```
+</details>
+
 
 
 ## 🟡 Nivel: Intermedio
@@ -1527,6 +1553,223 @@ SELECT
 FROM spotify_tracks
 GROUP BY track_genre
 ORDER BY track_genre
+```
+</details>
+
+### 📝 Reto 29
+**Problema:**  Calcula la popularidad media de cada género, pero añade una columna que muestre la diferencia entre esa media y la popularidad media global de todas las canciones del data set. Muestra una fila por cada género y ordena el resultado de mayor a menor diferencia.
+
+**Estructura de las tablas:**
+
+spotify_tracks
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT DISTINCT track_genre, 
+		AVG(popularity) OVER(PARTITION BY track_genre) as avg_pop_genre, 
+		AVG(popularity) OVER(PARTITION BY track_genre) - (SELECT AVG(popularity) FROM spotify_tracks) as avg_diff
+FROM spotify_tracks
+ORDER BY avg_diff DESC
+```
+</details>
+
+### 📝 Reto 30
+**Problema:**  Divide todas las canciones del dataset en 4 grupos iguales (cuartiles) basados en su energy (del más tranquilo al más enérgico). Para cada cuartil, muestra la popularidad media y la bailabilidad media. Muestra los cuartiles ordenados. 
+
+**Estructura de las tablas:**
+
+spotify_tracks
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH cuartiles as(
+	SELECT popularity, danceability, NTILE(4) OVER(ORDER BY energy) as num_cuartil
+	FROM spotify_tracks
+)
+
+SELECT num_cuartil, AVG(popularity) as avg_popularity, AVG(danceability) as avg_danceabiltiy
+FROM cuartiles
+GROUP BY num_cuartil
+ORDER BY num_cuartil
+```
+</details>
+
+### 📝 Reto 31
+**Problema:**   Identifca las 10 canciones y sus artistas que aparecen en el mayor número de géneros distintos. Muestra el nombre de la canción, el artista y la lista de géneros en una sola celda ordenados alfabéticamente (se necesita una función especial). 
+
+**Estructura de las tablas:**
+
+spotify_tracks
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT track_name, artists, STRING_AGG(track_genre, ', ' ORDER BY track_genre) as lista_generos, 
+		COUNT(DISTINCT track_genre) as total_generos
+FROM spotify_tracks
+GROUP BY track_name, artists
+ORDER BY total_generos DESC
+LIMIT 10
+```
+</details>
+
+### 📝 Reto 32
+**Problema:**   Identifica si hay Ids de canciones duplicados. Si la respuesta es afirmativa (vamos a suponer que la es), quedate con el registro que más popularidad tenga. El resto del dataset debe permanecer igual. 
+
+**Estructura de las tablas:**
+
+spotify_tracks
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+# Detección de duplicados 
+SELECT track_id, COUNT(*)
+FROM spotify_tracks
+GROUP BY track_id
+HAVING COUNT(*) > 1
+
+# Selección del registro con mayor popularidad
+WITH ranking_id as(
+	SELECT *,
+		ROW_NUMBER() OVER(PARTITION BY track_id ORDER BY popularity DESC) as ranking
+	FROM spotify_tracks
+)
+
+SELECT *
+FROM ranking_id
+WHERE ranking = 1
+```
+</details>
+
+### 📝 Reto 33
+**Problema:**   Calcula el promedio del precio de cierre (close_price) de los últimos 7 días (el actual y los 6 anteriores). Muesta solo los resultados para el año 2024. Muestra date, close_price y el promedio (cuidado con los primeros días de enero). 
+
+**Estructura de las tablas:**
+
+spotify_tracks
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH calculo_media AS (
+    SELECT 
+        date, 
+        close_price, 
+        AVG(close_price) OVER(ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) as media_movil_7d
+    FROM google_stock
+)
+SELECT * FROM calculo_media
+WHERE date >= '2024-01-01' AND date <= '2024-12-31'
+ORDER BY date;
+```
+</details>
+
+### 📝 Reto 34
+**Problema:**   Encuentra los días en los que el price_range fue un 50% mayor que el promedio de price_range de su mismo mes y año. Muestra la fecha, el price_range de ese día, el promedio mensual de ese mes específico y el % de exceso. 
+
+**Estructura de las tablas:**
+
+spotify_tracks
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH promedios AS (
+    SELECT 
+        date, 
+        price_range, 
+        month, 
+        year, 
+        AVG(price_range) OVER(PARTITION BY year, month) as avg_mensual
+    FROM google_stock
+)
+SELECT 
+    date, 
+    price_range, 
+    ROUND(avg_mensual::numeric, 2) as avg_mensual,
+    ROUND(((price_range - avg_mensual) / avg_mensual * 100)::numeric, 2) as pct_exceso_real
+FROM promedios
+WHERE price_range > (avg_mensual * 1.5)
+ORDER BY pct_exceso_real DESC;
+```
+</details>
+
+### 📝 Reto 35
+**Problema:**   Calcula para cada día la media móvil del close_price de 20 días y la de 50 días. Muestra solo los dias del año 2023 donde la media de 20 sea mayor que la de 50.  
+
+**Estructura de las tablas:**
+
+spotify_tracks
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH medias_moviles AS (
+    SELECT 
+        date, 
+        close_price,
+        AVG(close_price) OVER(ORDER BY date ROWS BETWEEN 19 PRECEDING AND CURRENT ROW) as ma20,
+        AVG(close_price) OVER(ORDER BY date ROWS BETWEEN 49 PRECEDING AND CURRENT ROW) as ma50
+    FROM google_stock
+)
+SELECT 
+    date, 
+    ROUND(close_price::numeric, 2) as precio,
+    ROUND(ma20::numeric, 2) as ma20,
+    ROUND(ma50::numeric, 2) as ma50
+FROM medias_moviles
+WHERE ma20 > ma50              
+  AND date >= '2023-01-01'     
+ORDER BY date;
+```
+</details>
+
+### 📝 Reto 36
+**Problema:**   Encuentra los días en los que el precio de apertura (open_price) de hoy fue más de un 2% superior al precio de cierre (close_price) del día anterior. 
+
+**Estructura de las tablas:**
+
+spotify_tracks
+
+![Tabla user_transactions]
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH dia_anterior as(
+	SELECT date, open_price,
+		LAG(close_price) OVER(ORDER BY date) as lag_close_price
+	FROM google_stock
+)
+
+SELECT date, open_price
+FROM dia_anterior
+WHERE open_price > (lag_close_price * 1.02)
 ```
 </details>
 
