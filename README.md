@@ -1773,6 +1773,55 @@ WHERE open_price > (lag_close_price * 1.02)
 ```
 </details>
 
+### 📝 Reto 37
+**Problema:**   Realiza una consulta para mostrar los 3 estados de Brasil (customer_state) donde los clientes están más insatisfechos (promedio de review_score más bajo). 
+
+**Estructura de las tablas:**
+
+![otra](https://github.com/Nachoide100/Practicar-SQL/blob/aee7cae800b9ee041eb9ffb1acf25edc300b91e8/tablas/37I_1.png)
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/aee7cae800b9ee041eb9ffb1acf25edc300b91e8/tablas/37I.png)
+![otramas](https://github.com/Nachoide100/Practicar-SQL/blob/aee7cae800b9ee041eb9ffb1acf25edc300b91e8/tablas/37I_2.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT customer_state, AVG(r.review_score) as avg_review_score
+FROM olist_customers c
+JOIN olist_orders o ON o.customer_id = c.customer_id
+JOIN olist_order_reviews r ON o.order_id = r.order_id
+GROUP BY c.customer_state
+ORDER BY avg_review_score
+LIMIT 3
+```
+</details>
+
+### 📝 Reto 38
+**Problema:**   Realiza una consulta que identifique a los clientes más fieles, es decir, aquellos que han realizado más de un pedido en toda la historia. Debes mostrar el id único del cliente, la cantidad total de pedidos realizados, la fecha y de su primer y último pedido y el tiempo que lleva siendo cliente.
+
+**Estructura de las tablas:**
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/aee7cae800b9ee041eb9ffb1acf25edc300b91e8/tablas/37I.png)
+![otramas](https://github.com/Nachoide100/Practicar-SQL/blob/aee7cae800b9ee041eb9ffb1acf25edc300b91e8/tablas/37I_2.png)
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT 
+    c.customer_unique_id, 
+    COUNT(o.order_id) as total_pedidos,
+    MIN(o.order_purchase_timestamp) as primer_pedido,
+    MAX(o.order_purchase_timestamp) as ultimo_pedid
+    AGE(MAX(o.order_purchase_timestamp), MIN(o.order_purchase_timestamp)) as tiempo_de_vida
+FROM olist_customers c
+JOIN olist_orders o ON c.customer_id = o.customer_id
+GROUP BY c.customer_unique_id
+HAVING COUNT(o.order_id) > 1
+ORDER BY total_pedidos DESC;
+```
+</details>
+
 ## 🔴 Nivel: Difícil 
 *Foco en: Funciones ventana, CTEs y JOINS complejos, UNIONS*
 
