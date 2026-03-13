@@ -711,6 +711,124 @@ ORDER BY popularidad_media DESC;
 ```
 </details>
 
+### 📝 Reto 30
+**Problema:**  Devuelve el nombre del usuario y la suma total de dinero que ha gastado en pedidos 'Entregados', pero solo para aquellos usuarios que hayan gastado más de 200€ en total en la plataforma.
+
+**Estructura de las tablas:**
+
+usuarios
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/usuarios.png)
+
+pedidos 
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/pedidos.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT u.nombre, SUM(p.monto_total) as total_gastado
+FROM usuarios u
+JOIN pedidos p ON u.usuario_id = p.usuario_id
+WHERE estado = 'Entregado'
+GROUP BY u.nombre
+HAVING SUM(p.monto_total) > 200
+```
+</details>
+
+### 📝 Reto 31
+**Problema:**  Haz una consulta que muestre el tipo_comida y el total de ingresos generados (pedidos 'Entregados') por cada categoría. Ordena el resultado para que el tipo de comida que más dinero genera aparezca primero.
+
+**Estructura de las tablas:**
+
+restaurantes
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/restaurantes.png)
+
+pedidos 
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/pedidos.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT r.tipo_comida, SUM(p.monto_total) as ingresos_generados
+FROM restaurantes r
+JOIN pedidos p ON r.restaurante_id = p.restaurante_id
+WHERE estado = 'Entregado'
+GROUP BY r.tipo_comida
+ORDER BY ingresos_generados DESC
+```
+</details>
+
+### 📝 Reto 32
+**Problema:**  Saca un listado que muestre el nombre del usuario, el nombre_restaurante donde compró y la fecha_pedido. Filtra la consulta para que solo aparezcan los pedidos realizados en restaurantes de tipo 'Asiática'.
+
+**Estructura de las tablas:**
+
+restaurantes
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/restaurantes.png)
+
+pedidos 
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/pedidos.png)
+
+usuarios
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/usuarios.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT u.nombre, r.nombre_restaurante, p.fecha_pedido
+FROM usuarios u 
+JOIN pedidos p ON p.usuario_id = u.usuario_id
+JOIN restaurantes r ON r.restaurante_id = p.restaurante_id 
+WHERE r.tipo_comida = 'Asiática'
+```
+</details>
+
+### 📝 Reto 33
+**Problema:**  El equipo de Operaciones quiere entender el tamaño de los "tickets" de compra. Clasifica los pedidos en tres categorías según su `monto_total`:
+
+- 'Pequeño' (menos de 15€)
+- 'Medio' (entre 15€ y 30€)
+- 'Grande' (más de 30€)
+Muestra el nombre de la categoría y **cuenta cuántos pedidos 'Entregados'** hay en cada una.
+
+**Estructura de las tablas:**
+
+pedidos 
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/pedidos.png)
+
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+SELECT  
+			CASE
+				WHEN monto_total < 15 THEN 'Pequeño'
+				WHEN monto_total BETWEEN 15 AND 30 THEN 'Medio'
+				ELSE 'Grande'
+				END AS categoria, 
+				COUNT(*) as numero_pedidos_entregados
+FROM pedidos
+WHERE estado = 'Entregado'
+GROUP BY categoria
+```
+</details>
+
+
 
 
 ## 🟡 Nivel: Intermedio
@@ -1819,6 +1937,86 @@ JOIN olist_orders o ON c.customer_id = o.customer_id
 GROUP BY c.customer_unique_id
 HAVING COUNT(o.order_id) > 1
 ORDER BY total_pedidos DESC;
+```
+</details>
+
+### 📝 Reto 39
+**Problema:**   El equipo de fidelización quiere analizar la primera experiencia de cada cliente. Extrae un listado que muestre exclusivamente el primer pedido que hizo cada usuario en la plataforma. Devuelve el usuario_id, la fecha_pedido y el monto_total
+
+**Estructura de las tablas:**
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/pedidos.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH primer_pedido AS(
+	SELECT usuario_id, fecha_pedido, monto_total, 
+				ROW_NUMBER() OVER (PARTITION BY usuario_id ORDER BY fecha_pedido) as fecha
+	FROM pedidos
+)
+
+SELECT usuario_id, fecha_pedido, monto_total
+FROM primer_pedido
+WHERE fecha = 1
+```
+</details>
+
+### 📝 Reto 40
+**Problema:**   Calcula los ingresos totales (estado ‘Entregado’) agrupados por mes. Añade una columna que muestre los ingresos del mes inmediatamente anterior para poder ver la evolución. 
+
+**Estructura de las tablas:**
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/pedidos.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH ingresos_por_mes AS(
+		SELECT DATE_TRUNC('month', fecha_pedido) as mes, SUM(monto_total) as total_ingresos
+		FROM pedidos
+		WHERE estado = 'Entregado'
+		GROUP BY DATE_TRUNC('month', fecha_pedido)
+)
+
+SELECT mes, total_ingresos, 
+			LAG(mes, 1) OVER (ORDER BY mes) as ingresos_mes_anterior
+FROM ingresos_por_mes
+```
+</details>
+
+### 📝 Reto 41
+**Problema:**  Para cada usuario, muestra su nombre y el nombre_restaurante en el que ha hecho mayor cantidad de pedidos. 
+
+**Estructura de las tablas:**
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/pedidos.png)
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/restaurantes.png)
+
+![Tabla user_transactions](https://github.com/Nachoide100/Practicar-SQL/blob/497c18b4eef62ef26d8d498f8cbb3d5c8bbbafc3/tablas/usuarios.png)
+
+
+<details>
+  <summary><b>Ver Solución SQL 🔑</b></summary>
+  
+  ```sql
+WITH ranking_rest AS(
+	SELECT u.nombre as nombre_usuario, r.nombre_restaurante, COUNT(p.pedido_id) as num_pedidos,
+				ROW_NUMBER() OVER(PARTITION BY u.usuario_id ORDER BY COUNT(p.pedido_id) DESC) as rnk_pedidos
+	FROM usuarios u
+	JOIN pedidos p ON u.usuario_id = p.usuario_id
+	JOIN restaurantes r ON r.restaurante_id = p.restaurante_id
+	GROUP BY u.nombre, r.nombre_restaurante
+)
+
+SELECT nombre_usuario, nombre_restaurante
+FROM ranking_rest
+WHERE rnk_pedidos = 1
 ```
 </details>
 
